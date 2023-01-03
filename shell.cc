@@ -57,3 +57,12 @@ std::error_code Shell::read_line(int fd, std::string& line) {
     }
   }
 }
+
+std::vector<Command> Shell::parse_line(const std::string& line) {
+  std::vector<Command> commands;
+  std::istringstream iss(line);
+  Command command_palette;
+  while (!iss.eof()) {
+
+  }
+}
