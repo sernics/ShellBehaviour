@@ -38,6 +38,9 @@ std::error_code Shell::read_line(int fd, std::string& line) {
     const int BufferSize = 1024;
     uint8_t buffer[BufferSize];
     int bytes_read = read(fd, buffer, BufferSize);
+    if (bytes_read == -1) {
+      return std::error_code(errno, std::generic_category());
+    } 
     if (bytes_read == 0) {
       if (line.empty()) {
         return std::error_code(0, std::generic_category());
@@ -66,4 +69,5 @@ std::vector<Command> Shell::parse_line(const std::string& line) {
   while (!iss.eof()) {
 
   }
+  return commands;
 }
