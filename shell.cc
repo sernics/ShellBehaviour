@@ -35,27 +35,28 @@ std::error_code Shell::read_line(int fd, std::string& line) {
       pending_input_.erase(pending_input_.begin(), line_jump + 1);
       return std::error_code(0, std::generic_category());
     }
-    uint8_t buffer[1024];
-    int bytes_read = read(fd, buffer, 1024);
-    if (bytes_read == -1) {
-      return std::error_code(errno, std::generic_category());
-    }
-    // Comprobar el tamaño del buffer
+    const int BufferSize = 1024;
+    uint8_t buffer[BufferSize];
+    int bytes_read = read(fd, buffer, BufferSize);
     if (bytes_read == 0) {
-      if (pending_input_.size() != 0) {
-        for (const auto c : pending_input_) {
-          line.push_back(c);
+      if (line.empty()) {
+        return std::error_code(0, std::generic_category());
+      } else {
+        if (pending_input_.size() != 0) {
+          for (const auto c : pending_input_) {
+            line.push_back(c);
+          }
+          line.push_back('\n');
+          pending_input_.clear();
         }
-        line.push_back('\n');
-        pending_input_.clear();
+        return std::error_code(0, std::generic_category());
       }
-      return std::error_code(0, std::generic_category());
     } else {
       for (int i{0}; i < bytes_read; i++) {
         pending_input_.push_back(buffer[i]);
       }
     }
-  }
+  } 
 }
 
 std::vector<Command> Shell::parse_line(const std::string& line) {
