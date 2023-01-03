@@ -1,57 +1,59 @@
 #include "shell.h"
-#include <sstream>
+
+#include <pwd.h>
 #include <unistd.h>
+
+#include <algorithm>
 #include <iostream>
+#include <sstream>
 
 Shell::Shell() = default;
 
 void Shell::print_prompt(int last_command_status) {
-  char* username;
+  char* username = getpwuid(getuid())->pw_name;
   char* hostname = new char[1024];
   char* cwd = new char[1024];
   gethostname(hostname, 1024);
   getcwd(cwd, 1024);
-  std::cout << "$" << username << "@" << hostname << ":" << cwd;
+  std::cout << username << "@" << hostname << ":" << cwd;
   if (last_command_status == 0) {
-    std::cout << "> ";
+    std::cout << " $> ";
   } else {
-    std::cout << "< ";
+    std::cout << " $< ";
   }
   std::cout << std::endl;
-  if (getlogin()) {
-    std::cout << "No da error" << std::endl;
-  } else {
-    std::cout << "Da error" << std::endl;
-  }
 }
 
 std::error_code Shell::read_line(int fd, std::string& line) {
   while (true) {
-    for (int i{0}; i < pending_input_.size(); i++) {
-      if (pending_input_[i] == '\n') {
-        for (int j{0}; j <= i; j++) {
-          line.push_back(pending_input_[j]);
-          pending_input_.erase(pending_input_.begin());
-        }
-        return std::error_code(0, std::system_category());
+    auto line_jump = std::find(pending_input_.begin(), pending_input_.end(), '\n');
+    if (line_jump != pending_input_.end()) {
+      int line_jump_position = line_jump - pending_input_.begin();
+      for (int i{0}; i <= line_jump_position; i++) {
+        line.push_back(pending_input_[i]);
       }
+      pending_input_.erase(pending_input_.begin(), line_jump + 1);
+      return std::error_code(0, std::generic_category());
     }
-    auto error = read(fd, pending_input_.data(), pending_input_.size());
-    if (error == -1) {
-      return std::error_code(errno, std::system_category());
+    uint8_t buffer[1024];
+    int bytes_read = read(fd, buffer, 1024);
+    if (bytes_read == -1) {
+      return std::error_code(errno, std::generic_category());
     }
-    if (/*buffer vacio*/) {
-      if (!pending_input_.empty()) {
-        for (int i{0}; i < pending_input_.size(); i++) {
-          line.push_back(pending_input_[i]);
+    // Comprobar el tamaño del buffer
+    if (bytes_read == 0) {
+      if (pending_input_.size() != 0) {
+        for (const auto c : pending_input_) {
+          line.push_back(c);
         }
         line.push_back('\n');
         pending_input_.clear();
       }
-      return std::error_code(0, std::system_category());
+      return std::error_code(0, std::generic_category());
     } else {
-      // Añadir el contenido del buffer al final de pending_input 
-      read(fd, pending_input_.data(), pending_input_.size());
+      for (int i{0}; i < bytes_read; i++) {
+        pending_input_.push_back(buffer[i]);
+      }
     }
   }
 }
