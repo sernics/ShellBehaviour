@@ -12,14 +12,14 @@ int main() {
   std::string line;
   int fd = open("input.txt", O_RDONLY);
   std::error_code error = shell.read_line(0, line);
-  std::cout << line.size() << std::endl;
-  for (const auto el : line) {
-    if (el == '\n') {
-      std::cout << "-";
-    } else {
-      std::cout << el;
+  auto commands = shell.parse_line(line);
+  std::cout << commands.size() << std::endl;
+  for (const auto command_palette : commands) {
+    for (const auto command : command_palette) {
+      std::cout << command << " ";
     }
+    std::cout << std::endl;
   }
-  std::cout << std::endl;
+  close(fd);
   return 0;
 }

@@ -26,7 +26,8 @@ void Shell::print_prompt(int last_command_status) {
 
 std::error_code Shell::read_line(int fd, std::string& line) {
   while (true) {
-    auto line_jump = std::find(pending_input_.begin(), pending_input_.end(), '\n');
+    auto line_jump =
+        std::find(pending_input_.begin(), pending_input_.end(), '\n');
     if (line_jump != pending_input_.end()) {
       int line_jump_position = line_jump - pending_input_.begin();
       for (int i{0}; i <= line_jump_position; i++) {
@@ -40,7 +41,7 @@ std::error_code Shell::read_line(int fd, std::string& line) {
     int bytes_read = read(fd, buffer, BufferSize);
     if (bytes_read == -1) {
       return std::error_code(errno, std::generic_category());
-    } 
+    }
     if (bytes_read == 0) {
       if (line.empty()) {
         return std::error_code(0, std::generic_category());
@@ -59,7 +60,7 @@ std::error_code Shell::read_line(int fd, std::string& line) {
         pending_input_.push_back(buffer[i]);
       }
     }
-  } 
+  }
 }
 
 std::vector<Command> Shell::parse_line(const std::string& line) {
@@ -67,7 +68,64 @@ std::vector<Command> Shell::parse_line(const std::string& line) {
   std::istringstream iss(line);
   Command command_palette;
   while (!iss.eof()) {
-
+    std::string input;
+    iss >> input;
+    if (input == ";" || input == "&" || input == "|") {
+      commands.push_back(command_palette);
+      commands.push_back({input});
+      command_palette.clear();
+    } else if (input == "#") {
+      commands.push_back(command_palette);
+      command_palette.clear();
+      return commands;
+    } else if (input.empty()) {
+      if (this->are_commands_end(input)) {
+        
+      } else if (this->are_commands_start(input)) {
+        
+      } else if (this->is_a_commentary(input)) {
+        commands.push_back(command_palette);
+        command_palette.clear();
+        return commands;
+      } else {
+        commands.push_back(command_palette);
+        command_palette.clear();
+      }
+    } else {
+      if (this->are_commands_end(input)) {
+        
+      } else if (this->are_commands_start(input)) {
+        
+      } else if (this->is_a_commentary(input)) {
+        commands.push_back(command_palette);
+        command_palette.clear();
+        return commands;
+      } else {
+        command_palette.push_back(input);
+      }
+    }
   }
   return commands;
+}
+
+bool Shell::are_commands_end(const std::string& input) {
+  if (input[input.size() - 1] == ';' || input[input.size() - 1] == '&' ||
+      input[input.size() - 1] == '|') {
+    return true;
+  }
+  return false;
+}
+
+bool Shell::are_commands_start(const std::string& input) {
+  if (input[0] == ';' || input[0] == '&' || input[0] == '|') {
+    return true;
+  }
+  return false;
+}
+
+bool Shell::is_a_commentary(const std::string& input) {
+  if (input[0] == '#') {
+    return true;
+  }
+  return false;
 }
