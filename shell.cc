@@ -80,22 +80,41 @@ std::vector<Command> Shell::parse_line(const std::string& line) {
       return commands;
     } else if (input.empty()) {
       if (this->are_commands_end(input)) {
-        
+        std::string last_item = std::string(1, input[input.size() - 1]);
+        input.resize(input.size() - 1);
+        command_palette.push_back(input);
+        commands.push_back(command_palette);
+        command_palette.clear();
+        commands.push_back({last_item});
       } else if (this->are_commands_start(input)) {
-        
+        commands.push_back(command_palette);
+        command_palette.clear();
+        std::string first_item = std::string(1, input[0]);
+        input.erase(input.begin());
+        commands.push_back({first_item});
+        commands.push_back({input});
       } else if (this->is_a_commentary(input)) {
         commands.push_back(command_palette);
         command_palette.clear();
-        return commands;
       } else {
         commands.push_back(command_palette);
         command_palette.clear();
       }
     } else {
       if (this->are_commands_end(input)) {
-        
+        std::string last_item = std::string(1, input[input.size() - 1]);
+        input.resize(input.size() - 1);
+        command_palette.push_back(input);
+        commands.push_back(command_palette);
+        commands.push_back({last_item});
+        command_palette.clear();
       } else if (this->are_commands_start(input)) {
-        
+        commands.push_back(command_palette);
+        command_palette.clear();
+        std::string first_item = std::string(1, input[0]);
+        input.erase(input.begin());
+        commands.push_back({first_item});
+        command_palette.push_back(input);
       } else if (this->is_a_commentary(input)) {
         commands.push_back(command_palette);
         command_palette.clear();
