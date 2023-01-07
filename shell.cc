@@ -134,7 +134,9 @@ std::vector<Command> Shell::parse_line(const std::string& line) {
 }
 
 command_result Shell::execute_command(const std::vector<Command>& commands) {
-  // Code
+  std::string command = "mv algo aqui/";
+  std::cout << "Hola: " << this->is_an_internal_command(command) << std::endl;
+  return command_result(0, 0);
 }
 
 bool Shell::are_commands_end(const std::string& input) {
@@ -160,14 +162,14 @@ bool Shell::is_a_commentary(const std::string& input) {
 }
 
 bool Shell::is_an_internal_command(const std::string& command) {
-  std::regex echo_pattern = std::regex("^echo\\s(.*)$");
-  std::regex cd_pattern = std::regex("^cd\\s+(.*)$");
-  std::regex cp_pattern = std::regex("^cp\\s+(-r\\s+)?(.*?)\\s+(.*?)$");
-  std::regex mv_pattern = std::regex("^mv\\s+(.*?)\\s+(.*?)$");
-  if (std::regex_match(command, echo_pattern) ||
-      std::regex_match(command, echo_pattern) ||
-      std::regex_match(command, echo_pattern) ||
-      std::regex_match(command, echo_pattern)) {
+  std::regex echo_regex("^echo\\s+(.*)$");
+  std::regex cd_regex("^cd\\s+(.*)$");
+  std::regex cp_regex("cp\\s+(-r\\s+)?(.*?)\\s+(.*?)$");
+  std::regex mv_regex("^mv\\s+(.*?)\\s+(.*?)$");
+  if (std::regex_match(command, echo_regex) ||
+      std::regex_match(command, cd_regex) ||
+      std::regex_match(command, cp_regex) || 
+      std::regex_match(command, mv_regex)) {
     return true;
   }
   return false;

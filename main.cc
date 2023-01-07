@@ -10,8 +10,8 @@ int main() {
   int last_command_status = 0;
   shell.print_prompt(last_command_status);
   std::string line;
-  int fd = open("input.txt", O_RDONLY);
-  std::error_code error = shell.read_line(0, line);
+  int fd = 0;
+  std::error_code error = shell.read_line(fd, line);
   auto commands = shell.parse_line(line);
   std::cout << commands.size() << std::endl;
   std::cout << "Commands:" << std::endl;
@@ -21,9 +21,9 @@ int main() {
     }
     std::cout << std::endl;
   }
-  // if (commands.size() > 0) {
-  //   auto execute = shell.execute_command(commands);
-  // }
+  if (commands.size() > 0) {
+    auto execute = shell.execute_command(commands);
+  }
   close(fd);
   return 0;
 }
