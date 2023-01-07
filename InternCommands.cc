@@ -26,3 +26,11 @@ command_result InterCommands::echo_command() {
   std::cout << result << std::endl;
   return command_result(0, 0);
 }
+
+command_result InterCommands::cp_command() {
+  // TODO
+}
+
+command_result InterCommands::mv_command() {
+  // TODO
+}

@@ -8,4 +8,6 @@ class InterCommands {
     std::vector<Command> args_;
     command_result cd_command();
     command_result echo_command();
+    command_result cp_command();
+    command_result mv_command();
 };
