@@ -124,8 +124,24 @@ std::vector<Command> Shell::parse_line(const std::string& line) {
       }
     }
   }
+  for (int i{0}; i < commands.size(); i++) {
+    if (commands[i].size() == 0) {
+      commands.erase(commands.begin() + i);
+    }
+  }
   return commands;
 }
+
+// command_result Shell::execute_command(const std::vector<Command>& commands) {
+//   std::string command_string = "";
+//   for (const auto command_palette : commands) {
+//     for (const auto command : command_palette) {
+//       command_string += command + " ";
+//     }
+//   }
+//   std::cout << commands.size() << std::endl;
+//   std::cout << command_string << std::endl;
+// }
 
 bool Shell::are_commands_end(const std::string& input) {
   if (input[input.size() - 1] == ';' || input[input.size() - 1] == '&' ||
@@ -149,6 +165,10 @@ bool Shell::is_a_commentary(const std::string& input) {
   return false;
 }
 
-command_result Shell::execute_command(const std::vector<Command>& commands) {
-  
+bool Shell::is_an_internal_command(const std::string& command) {
+  // Comprobar si es un echo
+  // Comprobar si es un cd
+  // Comprobar si es un cp
+  // Comprobar si es un mv
+  return true;
 }

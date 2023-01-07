@@ -14,13 +14,16 @@ int main() {
   std::error_code error = shell.read_line(0, line);
   auto commands = shell.parse_line(line);
   std::cout << commands.size() << std::endl;
+  std::cout << "Commands:" << std::endl;
   for (const auto command_palette : commands) {
     for (const auto command : command_palette) {
       std::cout << command << " ";
     }
     std::cout << std::endl;
   }
-  shell.execute_command(commands);
+  // if (commands.size() > 0) {
+  //   auto execute = shell.execute_command(commands);
+  // }
   close(fd);
   return 0;
 }
