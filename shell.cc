@@ -21,7 +21,7 @@ void Shell::print_prompt(int last_command_status) {
   } else {
     std::cout << " $< ";
   }
-  std::cout << std::endl;
+  std::cout << std::flush;
 }
 
 std::error_code Shell::read_line(int fd, std::string& line) {

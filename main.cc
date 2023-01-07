@@ -20,6 +20,7 @@ int main() {
     }
     std::cout << std::endl;
   }
+  shell.execute_command(commands);
   close(fd);
   return 0;
 }
