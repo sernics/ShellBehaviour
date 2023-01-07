@@ -1,4 +1,5 @@
 #include "shell.h"
+#include "InterCommnads.h"
 
 #include <pwd.h>
 #include <unistd.h>
@@ -134,8 +135,16 @@ std::vector<Command> Shell::parse_line(const std::string& line) {
 }
 
 command_result Shell::execute_command(const std::vector<Command>& commands) {
-  std::string command = "mv algo aqui/";
-  std::cout << "Hola: " << this->is_an_internal_command(command) << std::endl;
+  std::string command = "";
+  for (const auto& item : commands) {
+    for (const auto c : item) {
+      command += c;
+      command += " ";
+    }
+  }
+  if (this->is_an_internal_command(command)) {
+    
+  }
   return command_result(0, 0);
 }
 
@@ -173,4 +182,9 @@ bool Shell::is_an_internal_command(const std::string& command) {
     return true;
   }
   return false;
+}
+
+int Shell::foo_command(const std::vector<Command>& commands) {
+  InterCommands inter_commands(commands);
+  return inter_commands.execute().return_value;
 }

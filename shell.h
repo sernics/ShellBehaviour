@@ -18,5 +18,5 @@ class Shell {
     bool are_commands_start(const std::string& input);
     bool is_a_commentary(const std::string& input);
     bool is_an_internal_command(const std::string& input);
-    int foo_command(const std::vector<std::string>& args);
+    int foo_command(const std::vector<Command>& args);
 };
