@@ -7,4 +7,5 @@ class InterCommands {
   private:
     std::vector<Command> args_;
     command_result cd_command();
+    command_result echo_command();
 };
