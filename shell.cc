@@ -1,5 +1,4 @@
 #include "shell.h"
-#include "InterCommnads.h"
 
 #include <pwd.h>
 #include <unistd.h>
@@ -137,13 +136,14 @@ std::vector<Command> Shell::parse_line(const std::string& line) {
 command_result Shell::execute_command(const std::vector<Command>& commands) {
   std::string command = "";
   for (const auto& item : commands) {
-    for (const auto c : item) {
-      command += c;
+    for (const auto command_part : item) {
+      command += command_part;
       command += " ";
     }
   }
   if (this->is_an_internal_command(command)) {
-    
+    std::cout << "Hola: ";
+    return command_result(this->foo_command(commands), 0);
   }
   return command_result(0, 0);
 }
@@ -177,7 +177,7 @@ bool Shell::is_an_internal_command(const std::string& command) {
   std::regex mv_regex("^mv\\s+(.*?)\\s+(.*?)$");
   if (std::regex_match(command, echo_regex) ||
       std::regex_match(command, cd_regex) ||
-      std::regex_match(command, cp_regex) || 
+      std::regex_match(command, cp_regex) ||
       std::regex_match(command, mv_regex)) {
     return true;
   }
