@@ -148,3 +148,7 @@ bool Shell::is_a_commentary(const std::string& input) {
   }
   return false;
 }
+
+command_result Shell::execute_command(const std::vector<Command>& commands) {
+  
+}
