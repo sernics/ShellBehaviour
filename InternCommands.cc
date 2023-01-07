@@ -1,13 +1,13 @@
 #include "InterCommnads.h"
 #include <unistd.h>
+#include <iostream>
 
 InterCommands::InterCommands(std::vector<Command> args) : args_(args) {}
 
 command_result InterCommands::execute() {
-  // if (args_[0][0] == "cd") {
-  //   return this->cd_command().return_value;
-  // }
-  return command_result(1, 0);
+  if (args_[0][0] == "cd") {
+    return this->cd_command().return_value;
+  }
 }
 
 command_result InterCommands::cd_command() { 

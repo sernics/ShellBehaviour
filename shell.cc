@@ -142,9 +142,10 @@ command_result Shell::execute_command(const std::vector<Command>& commands) {
     }
   }
   if (this->is_an_internal_command(command)) {
-    std::cout << "Hola: ";
     return command_result(this->foo_command(commands), 0);
-  }
+  } /* else {
+    // Aqui va lo de los comandos externos
+  }*/
   return command_result(0, 0);
 }
 
