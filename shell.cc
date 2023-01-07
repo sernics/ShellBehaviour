@@ -5,6 +5,7 @@
 
 #include <algorithm>
 #include <iostream>
+#include <regex>
 #include <sstream>
 
 Shell::Shell() = default;
@@ -132,16 +133,9 @@ std::vector<Command> Shell::parse_line(const std::string& line) {
   return commands;
 }
 
-// command_result Shell::execute_command(const std::vector<Command>& commands) {
-//   std::string command_string = "";
-//   for (const auto command_palette : commands) {
-//     for (const auto command : command_palette) {
-//       command_string += command + " ";
-//     }
-//   }
-//   std::cout << commands.size() << std::endl;
-//   std::cout << command_string << std::endl;
-// }
+command_result Shell::execute_command(const std::vector<Command>& commands) {
+  // Code
+}
 
 bool Shell::are_commands_end(const std::string& input) {
   if (input[input.size() - 1] == ';' || input[input.size() - 1] == '&' ||
@@ -166,9 +160,15 @@ bool Shell::is_a_commentary(const std::string& input) {
 }
 
 bool Shell::is_an_internal_command(const std::string& command) {
-  // Comprobar si es un echo
-  // Comprobar si es un cd
-  // Comprobar si es un cp
-  // Comprobar si es un mv
-  return true;
+  std::regex echo_pattern = std::regex("^echo\\s(.*)$");
+  std::regex cd_pattern = std::regex("^cd\\s+(.*)$");
+  std::regex cp_pattern = std::regex("^cp\\s+(-r\\s+)?(.*?)\\s+(.*?)$");
+  std::regex mv_pattern = std::regex("^mv\\s+(.*?)\\s+(.*?)$");
+  if (std::regex_match(command, echo_pattern) ||
+      std::regex_match(command, echo_pattern) ||
+      std::regex_match(command, echo_pattern) ||
+      std::regex_match(command, echo_pattern)) {
+    return true;
+  }
+  return false;
 }
