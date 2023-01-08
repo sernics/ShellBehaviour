@@ -12,9 +12,14 @@ InterCommands::InterCommands(std::vector<Command> args) : args_(args) {}
 command_result InterCommands::execute() {
   if (args_[0][0] == "cd") {
     return this->cd_command().return_value;
-  }
-  if (args_[0][0] == "echo") {
+  } else if (args_[0][0] == "echo") {
     return this->echo_command().return_value;
+  } else if (args_[0][0] == "cp") {
+    return this->cp_command().return_value;
+  } else if (args_[0][0] == "mv") {
+    return this->mv_command().return_value;
+  } else {
+    return command_result(-1, 0);
   }
 }
 
@@ -34,6 +39,7 @@ command_result InterCommands::echo_command() {
 }
 
 command_result InterCommands::cp_command() {
+  std::cout << "Copy" << std::endl;
   std::string src_path = std::string(this->args_[0][1]);
   std::string dest_path = std::string(this->args_[0][2]);
   struct stat src_stat;
@@ -58,9 +64,10 @@ command_result InterCommands::cp_command() {
   if (src_fd == -1) {
     return command_result(errno, 0);
   }
-  
+  return command_result(0, 0);
 }
 
 command_result InterCommands::mv_command() {
-  // TODO
+  std::cout << "Move: " << std::endl;
+  return command_result(-1, 0);
 }
