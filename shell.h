@@ -1,7 +1,11 @@
+#ifndef SHELL_H_
+#define SHELL_H_
+
 #include <vector>
 #include <string>
 #include <system_error>
 #include "InterCommnads.h"
+#include "ExternCommands.h"
 
 class Shell {
   public:
@@ -22,3 +26,5 @@ class Shell {
     // Funcion para comandos externos
     int foo_command(const std::vector<Command>& args);
 };
+
+#endif // SHELL_H_

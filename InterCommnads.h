@@ -1,3 +1,6 @@
+#ifndef INTERCOMMANDS_H_
+#define INTERCOMMANDS_H_
+
 #include "command.h"
 
 class InterCommands {
@@ -12,3 +15,5 @@ class InterCommands {
     command_result mv_command();
     std::string basename(const std::string& path);
 };
+
+#endif // INTERCOMMANDS_H_

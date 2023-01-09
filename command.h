@@ -1,3 +1,6 @@
+#ifndef COMMAND_H_
+#define COMMAND_H_
+
 #include <vector>
 #include <string>
 
@@ -16,3 +19,5 @@ struct command_result {
     return command_result(return_value, true);
   }
 };
+
+#endif // COMMAND_H_
