@@ -8,6 +8,8 @@
 #include <regex>
 #include <sstream>
 
+#include "ExternCommands.h"
+
 Shell::Shell() = default;
 
 void Shell::print_prompt(int last_command_status) {
@@ -143,9 +145,10 @@ command_result Shell::execute_command(const std::vector<Command>& commands) {
   }
   if (this->is_an_internal_command(command)) {
     return command_result(this->foo_command(commands), 0);
-  } /* else {
-    // Aqui va lo de los comandos externos
-  }*/
+  } else {
+    ExternCommands external_command(commands);
+    return external_command.execute();
+  }
   return command_result(0, 0);
 }
 
