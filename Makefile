@@ -1,5 +1,5 @@
 CC=g++
-CXXFLAGS=-std=c++11 -g
+CXXFLAGS=-std=c++17 -g
 PROGNAME=shell
 
 OBJS=$(patsubst %.cc,%.o,$(wildcard *.cc))

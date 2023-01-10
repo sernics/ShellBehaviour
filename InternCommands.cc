@@ -1,5 +1,6 @@
 #include <assert.h>
 #include <fcntl.h>
+#include <libgen.h>
 #include <limits.h>
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -9,6 +10,7 @@
 #include <iostream>
 
 #include "InterCommnads.h"
+#include "scope.hpp"
 
 InterCommands::InterCommands(std::vector<Command> args) : args_(args) {}
 
@@ -57,22 +59,36 @@ command_result InterCommands::cp_command(bool preserve_all = false) {
     throw std::system_error(errno, std::system_category(),
                             "El archivo no es un archivo regular");
   }
-  if (stat(dst_path.c_str(), &dst) == -1) {
-    dst_path += "/";
-    dst_path += basename(src_path);
+  if (stat(dst_path.c_str(), &dst) == 0) {
+    // Hay que comprobar si es un directorio
+    if (S_ISDIR(dst.st_mode)) {
+      dst_path += "/";
+      dst_path += this->basename(src_path);
+    }
   }
+  std::cout << src_path << std::endl;
   fd1 = open(src_path.c_str(), O_RDONLY);
-  fd2 = open(dst_path.c_str(), O_WRONLY);
-  if (stat(dst_path.c_str(), &dst) == -1) {
-    fd2 = open(dst_path.c_str(), O_WRONLY | O_CREAT);
-  } else {
-    fd2 = open(dst_path.c_str(), O_WRONLY | O_TRUNC);
+  auto fd1_scope = scope::scope_exit([fd1] { close(fd1); });
+  if (fd1 < 0) {
+    throw std::system_error(errno, std::system_category(),
+                            "Error al abrir el archivo 1");
+  }
+  std::cout << dst_path << std::endl;
+  fd2 = open(dst_path.c_str(), O_WRONLY | O_CREAT | O_TRUNC, 0666);
+  auto fd2_scope = scope::scope_exit([fd2] { close(fd2); });
+  if (fd2 < 0) {
+    throw std::system_error(errno, std::system_category(),
+                            "Error al abrir el archivo 2");
   }
   int numbytes = read(fd1, buffer, sizeof(buffer));
+  if (numbytes < 0) {
+    throw std::system_error(errno, std::system_category(),
+                            "El archivo no se pudo leer");
+  }
   while (numbytes > 0) {
     std::cout << numbytes << std::endl;
     write(fd2, buffer, numbytes);
-    numbytes = read(fd1, buffer, sizeof(buffer));
+    numbytes = read(fd1, buffer, numbytes);
   }
   if (preserve_all == true) {
     chmod(dst_path.c_str(), src.st_mode);
@@ -82,8 +98,6 @@ command_result InterCommands::cp_command(bool preserve_all = false) {
     times[1] = src.st_mtim;
     futimens(fd2, times);
   }
-  close(fd1);
-  close(fd2);
   return command_result(0, 0);
 }
 
@@ -101,7 +115,7 @@ command_result InterCommands::mv_command() {
   }
   if (S_ISDIR(dst.st_mode)) {
     final_path = dst_path;
-    final_path += basename(src_path.c_str());
+    final_path += this->basename(src_path.c_str());
   }
   if (src_path == dst_path) {
     rename(src_path.c_str(), final_path.c_str());
@@ -113,7 +127,7 @@ command_result InterCommands::mv_command() {
 }
 
 std::string InterCommands::basename(const std::string &path) {
-  std::array<char, PATH_MAX> buffer;
+  std::array<char, PATH_MAX> buffer{};
   path.copy(buffer.data(), buffer.size());
-  return std::string(basename(buffer.data()));
+  return std::string(::basename(buffer.data()));
 }
