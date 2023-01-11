@@ -144,7 +144,8 @@ command_result Shell::execute_command(const std::vector<Command>& commands) {
     }
   }
   if (this->is_an_internal_command(command)) {
-    return command_result(this->foo_command(commands), 0);
+    InterCommands inter_commands(commands);
+    return inter_commands.execute().return_value;
   } else {
     ExternCommands external_command(commands);
     return external_command.execute();
@@ -186,9 +187,4 @@ bool Shell::is_an_internal_command(const std::string& command) {
     return true;
   }
   return false;
-}
-
-int Shell::foo_command(const std::vector<Command>& commands) {
-  InterCommands inter_commands(commands);
-  return inter_commands.execute().return_value;
 }

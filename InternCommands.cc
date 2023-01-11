@@ -60,7 +60,6 @@ command_result InterCommands::cp_command(bool preserve_all = false) {
                             "El archivo no es un archivo regular");
   }
   if (stat(dst_path.c_str(), &dst) == 0) {
-    // Hay que comprobar si es un directorio
     if (S_ISDIR(dst.st_mode)) {
       dst_path += "/";
       dst_path += this->basename(src_path);
@@ -87,8 +86,16 @@ command_result InterCommands::cp_command(bool preserve_all = false) {
   }
   while (numbytes > 0) {
     std::cout << numbytes << std::endl;
-    write(fd2, buffer, numbytes);
+    auto write_value = write(fd2, buffer, numbytes);
+    if (write_value < 0) {
+      throw std::system_error(errno, std::system_category(),
+                              "El archivo no se pudo escribir");
+    }
     numbytes = read(fd1, buffer, numbytes);
+    if (numbytes < 0) {
+      throw std::system_error(errno, std::system_category(),
+                              "El archivo no se pudo leer");
+    }
   }
   if (preserve_all == true) {
     chmod(dst_path.c_str(), src.st_mode);
