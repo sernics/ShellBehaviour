@@ -52,12 +52,10 @@ command_result InterCommands::cp_command(bool preserve_all = false) {
   int fd1;
   int fd2;
   if (stat(src_path.c_str(), &src) == -1) {
-    throw std::system_error(errno, std::system_category(),
-                            "Error al obtener el estado del archivo src_path");
+    return command_result(-1, 0);
   }
   if (!S_ISREG(src.st_mode)) {
-    throw std::system_error(errno, std::system_category(),
-                            "El archivo no es un archivo regular");
+    return command_result(-1, 0);
   }
   if (stat(dst_path.c_str(), &dst) == 0) {
     if (S_ISDIR(dst.st_mode)) {
@@ -69,32 +67,27 @@ command_result InterCommands::cp_command(bool preserve_all = false) {
   fd1 = open(src_path.c_str(), O_RDONLY);
   auto fd1_scope = scope::scope_exit([fd1] { close(fd1); });
   if (fd1 < 0) {
-    throw std::system_error(errno, std::system_category(),
-                            "Error al abrir el archivo 1");
+    return command_result(-1, 0);
   }
   std::cout << dst_path << std::endl;
   fd2 = open(dst_path.c_str(), O_WRONLY | O_CREAT | O_TRUNC, 0666);
   auto fd2_scope = scope::scope_exit([fd2] { close(fd2); });
   if (fd2 < 0) {
-    throw std::system_error(errno, std::system_category(),
-                            "Error al abrir el archivo 2");
+    return command_result(-1, 0);
   }
   int numbytes = read(fd1, buffer, sizeof(buffer));
   if (numbytes < 0) {
-    throw std::system_error(errno, std::system_category(),
-                            "El archivo no se pudo leer");
+    return command_result(-1, 0);
   }
   while (numbytes > 0) {
     std::cout << numbytes << std::endl;
     auto write_value = write(fd2, buffer, numbytes);
     if (write_value < 0) {
-      throw std::system_error(errno, std::system_category(),
-                              "El archivo no se pudo escribir");
+      return command_result(-1, 0);
     }
     numbytes = read(fd1, buffer, numbytes);
     if (numbytes < 0) {
-      throw std::system_error(errno, std::system_category(),
-                              "El archivo no se pudo leer");
+      return command_result(-1, 0);
     }
   }
   if (preserve_all == true) {

@@ -19,9 +19,14 @@ ExternCommands::ExternCommands(std::vector<Command> commands) : commands_(comman
 
 command_result ExternCommands::execute() {
   pid_t pid = fork();
-  if (pid == 0) {
+  if (pid < 0) {
+    return command_result(-1, 0);
+  } else if (pid == 0) {
     auto command_split = this->split(0);
-    execvp(command_split[0], command_split.data());
+    int ret = execvp(command_split[0], command_split.data());
+    if (ret == -1) {
+      return command_result(-1, 0);
+    }
   } else {
     int status;
     waitpid(pid, &status, 0);
