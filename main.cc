@@ -6,6 +6,7 @@
 #include "shell.h"
 
 int main() {
+  system("clear");
   int fd = 0;
   int last_command_status = 0;
   while (true) {
