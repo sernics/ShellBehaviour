@@ -21,6 +21,9 @@ int main() {
     if (commands.size() > 0) {
       auto execute = shell.execute_command(commands);
       last_command_status = execute.return_value;
+      if (last_command_status < 0) {
+        std::cout << "Error al ejecutar el comando anterior..." << std::endl;
+      }
     }
   }
   close(fd);
