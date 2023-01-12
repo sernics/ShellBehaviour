@@ -50,6 +50,8 @@
     "cstring": "cpp",
     "ctime": "cpp",
     "map": "cpp",
-    "regex": "cpp"
+    "regex": "cpp",
+    "mutex": "cpp",
+    "stop_token": "cpp"
   }
 }
